@@ -1,5 +1,5 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-WEBDAV; Base: 10 -*-
-;;; $Header: /usr/local/cvsrep/cl-webdav/specials.lisp,v 1.9 2007/04/18 19:21:01 edi Exp $
+;;; $Header: /usr/local/cvsrep/cl-webdav/specials.lisp,v 1.10 2008/06/25 08:02:17 edi Exp $
 
 ;;; Copyright (c) 2007, Dr. Edmund Weitz.  All rights reserved.
 
@@ -37,11 +37,12 @@
        ,@(when doc (list doc)))))
 
 (defun constantly-nil (&rest args)
+  "Does the same as the result of \(CONSTANTLY NIL)."
   (declare (ignore args))
   nil)
 
 (defconstant +dav-property-alist+
-  `(("creationdate" . creation-date)
+  '(("creationdate" . creation-date)
     ("displayname" . resource-display-name)
     ("getcontentlength" . get-content-length)
     ("getcontenttype" . get-content-type)
