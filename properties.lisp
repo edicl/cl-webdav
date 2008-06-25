@@ -1,5 +1,5 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-WEBDAV; Base: 10 -*-
-;;; $Header: /usr/local/cvsrep/cl-webdav/properties.lisp,v 1.8 2007/04/17 07:42:08 edi Exp $
+;;; $Header: /usr/local/cvsrep/cl-webdav/properties.lisp,v 1.9 2008/06/25 08:04:25 edi Exp $
 
 ;;; Copyright (c) 2007, Dr. Edmund Weitz.  All rights reserved.
 
@@ -80,7 +80,8 @@ found) the property itself."
   (let ((property (handler-case
                       (get-property resource property-designator)
                     (error (condition)
-                      (log-message "While trying to get property ~S for resource ~S: ~A"
+                      (log-message :warning
+                                   "While trying to get property ~S for resource ~S: ~A"
                                    (local-name property-designator)
                                    (resource-script-name resource)
                                    condition)
