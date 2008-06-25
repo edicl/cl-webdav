@@ -390,7 +390,7 @@ name SCRIPT-NAME \(which is already URL-decoded).")
    (make-instance resource-class-name
                   :script-name script-name)))
 
-(defun get-resource (&optional (script-name (url-decode* (script-name))))
+(defun get-resource (&optional (script-name (url-decode* (script-name*))))
   "Creates and returns an object of the type stored in
 *RESOURCE-CLASS* corresponding to the script name SCRIPT-NAME."
   (create-resource *resource-class* script-name))

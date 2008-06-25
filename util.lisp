@@ -90,5 +90,5 @@ then uses LATIN-1 if that fails."
   ;; LATIN-1...
   (handler-case
       (url-decode string +utf-8+)
-    (flex:flexi-stream-encoding-error ()
+    (flex:external-format-encoding-error ()
       (url-decode string +latin-1+))))

@@ -78,8 +78,7 @@ is needed to work around problems with some Microsoft DAV clients.")
 (defun options-handler ()
   "The handler for OPTIONS requests.  Output is basically
 determined by *ALLOWED-METHODS* and *DAV-COMPLIANCE-CLASSES*."
-  (setf (content-type) nil
-        (header-out :allow) (format nil "~{~A~^, ~}" *allowed-methods*)
+  (setf (header-out :allow) (format nil "~{~A~^, ~}" *allowed-methods*)
         (header-out :dav) (format nil "~{~D~^,~}" *dav-compliance-classes*)
         ;; Win2k wants this - sigh...
         (header-out :ms-author-via) "DAV")
@@ -91,7 +90,7 @@ determined by *ALLOWED-METHODS* and *DAV-COMPLIANCE-CLASSES*."
 content body \(if there is one) and returns a corresponding
 \"multistatus\" XML element using the methods for live and dead
 properties."
-  (let* ((depth-header (header-in :depth))
+  (let* ((depth-header (header-in* :depth))
          (depth-value (cond ((or (null depth-header)
                                  (string-equal depth-header "infinity")) nil)
                             ((string= depth-header "0") 0)
@@ -177,7 +176,7 @@ HEAD-REQUEST-P is true."
         (setf (header-out :content-language) content-language))
       (catch 'handler-done
         (handle-if-modified-since write-date)
-        (when (equal etag (header-in :if-none-match))
+        (when (equal etag (header-in* :if-none-match))
           (setf (return-code) +http-not-modified+)))
       (when (eql (return-code) +http-not-modified+)
         (throw 'handler-done nil))
@@ -219,7 +218,7 @@ instead."
 (defun delete-handler ()
   "The handler for DELETE requests.  Uses REMOVE-RESOURCE* to do
 the actual work."
-  (let ((depth-header (header-in :depth)))
+  (let ((depth-header (header-in* :depth)))
     (unless (or (null depth-header)
                 (string-equal depth-header "infinity"))
       (warn "Depth header is ~S." depth-header)
@@ -243,7 +242,7 @@ new resource from the contents sent by the client."
     (let ((parent (resource-parent resource)))
       (when (or (null parent) (not (resource-exists parent)))
         (conflict)))
-    (let* ((content-length-header (cdr (assoc :content-length (headers-in))))
+    (let* ((content-length-header (cdr (assoc :content-length (headers-in*))))
            (content-length (and content-length-header
                                 (parse-integer content-length-header :junk-allowed t))))
       (unless content-length
@@ -255,21 +254,21 @@ new resource from the contents sent by the client."
   "The handler for COPY requests which internally uses
 COPY-OR-MOVE-RESOURCE* to do the actual work.  Also doubles as a
 handler for MOVE requests if MOVEP is true."
-  (let* ((depth-header (header-in :depth))
+  (let* ((depth-header (header-in* :depth))
          (depth-value (cond ((or (null depth-header)
                                  (string-equal depth-header "infinity")) nil)
                             ((and (string= depth-header "0")
                                   (not movep)) 0)
                             (t (warn "Depth header is ~S." depth-header)
                                (bad-request))))
-         (overwrite (equal (header-in :overwrite) "T"))
+         (overwrite (equal (header-in* :overwrite) "T"))
          (source (get-resource)))
     ;; note that we ignore a possible request body and thus the
     ;; "propertybehaviour" XML element for now - we just try to use
     ;; best effort to copy/move all properties
     (unless (resource-exists source)
       (not-found))
-    (let ((destination-header (header-in :destination)))
+    (let ((destination-header (header-in* :destination)))
       (unless destination-header
         (warn "No 'Destination' header.")
         (bad-request))

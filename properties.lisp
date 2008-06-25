@@ -80,10 +80,10 @@ found) the property itself."
   (let ((property (handler-case
                       (get-property resource property-designator)
                     (error (condition)
-                      (log-message* "While trying to get property ~S for resource ~S: ~A"
-                                    (local-name property-designator)
-                                    (resource-script-name resource)
-                                    condition)
+                      (log-message "While trying to get property ~S for resource ~S: ~A"
+                                   (local-name property-designator)
+                                   (resource-script-name resource)
+                                   condition)
                       +http-internal-server-error+))))
     (etypecase property
       (null (values +http-ok+ property-designator))

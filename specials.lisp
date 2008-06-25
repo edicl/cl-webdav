@@ -36,6 +36,10 @@
     `(cl:defconstant ,name (if (boundp ',name) (symbol-value ',name) ,value)
        ,@(when doc (list doc)))))
 
+(defun constantly-nil (&rest args)
+  (declare (ignore args))
+  nil)
+
 (defconstant +dav-property-alist+
   `(("creationdate" . creation-date)
     ("displayname" . resource-display-name)
@@ -46,8 +50,8 @@
     ("getcontentlanguage" . resource-content-language)
     ("resourcetype" . resource-type)
     ("source" . resource-source)
-    ("lockdiscovery" . ,(constantly nil))
-    ("supportedlock" . ,(constantly nil)))
+    ("lockdiscovery" . constantly-nil)
+    ("supportedlock" . constantly-nil))
   "An alist mapping the \(names of the) standard DAV properties
 to functions handling them.")
 
