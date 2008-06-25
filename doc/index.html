@@ -1,0 +1,1202 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html> 
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  <title>CL-WEBDAV - A WebDAV server written in Common Lisp</title>
+  <style type="text/css">
+  pre { padding:5px; background-color:#e0e0e0 }
+  h3, h4 { text-decoration: underline; }
+  h4.none { text-decoration: none; }
+  a { text-decoration: none; padding: 1px 2px 1px 2px; }
+  a:visited { text-decoration: none; padding: 1px 2px 1px 2px; }
+  a:hover { text-decoration: none; padding: 1px 1px 1px 1px; border: 1px solid #000000; } 
+  a:focus { text-decoration: none; padding: 1px 2px 1px 2px; border: none; }
+  a.none { text-decoration: none; padding: 0; }
+  a.none:visited { text-decoration: none; padding: 0; } 
+  a.none:hover { text-decoration: none; border: none; padding: 0; } 
+  a.none:focus { text-decoration: none; border: none; padding: 0; } 
+  a.noborder { text-decoration: none; padding: 0; } 
+  a.noborder:visited { text-decoration: none; padding: 0; } 
+  a.noborder:hover { text-decoration: none; border: none; padding: 0; } 
+  a.noborder:focus { text-decoration: none; border: none; padding: 0; }  
+  pre.none { padding:5px; background-color:#ffffff }
+  </style>
+</head>
+
+<body bgcolor=white>
+
+<h2> CL-WEBDAV - A WebDAV server written in Common Lisp</h2>
+
+<blockquote>
+<br>&nbsp;<br><h3><a name=abstract class=none>Abstract</a></h3>
+
+CL-WEBDAV is a <a href="http://webdav.org/">WebDAV</a> server written
+in Common Lisp.  It aims to be as flexible as possible, allowing you
+to completely customize the way resources are handled.
+<p>
+The code comes with
+a <a
+href="http://www.opensource.org/licenses/bsd-license.php">BSD-style
+license</a> so you can basically do with it whatever you want.
+
+<p>
+<font color=red>Download shortcut:</font> <a href="http://weitz.de/files/cl-webdav.tar.gz">http://weitz.de/files/cl-webdav.tar.gz</a>.
+</blockquote>
+
+<center>
+<a class=none name="screen-shot" title="CL-WEBDAV as seen from a DAV client"><img alt="Screen shot" src="dav.png" border=0 width=679 height=374></a>
+</center>
+
+<br>&nbsp;<br><h3><a class=none name="contents">Contents</a></h3>
+<ol>
+  <li><a href="#download">Download and installation</a>
+  <li><a href="#example">Example</a>
+  <li><a href="#mail">Support and mailing lists</a>
+  <li><a href="#status">History and current status</a>
+  <li><a href="#reference">Function and variable reference</a>
+  <ol>
+    <li><a href="#resources">Resources</a>
+      <ol>
+        <li><a href="#mandatory">Mandatory methods</a>
+        <li><a href="#optional">Optional methods</a>
+      </ol>
+    <li><a href="#xml">XML handling</a>
+    <li><a href="#properties">Properties</a>
+    <li><a href="#handlers">Handlers and dispatchers</a>
+    <li><a href="#file">File resources</a>
+    <li><a href="#auth">Authorized file resources</a>
+  </ol>
+  <li><a href="#index">Symbol index</a>
+  <li><a href="#ack">Acknowledgements</a>
+</ol>
+
+<br>&nbsp;<br><h3><a class=none name="download">Download and installation</a></h3>
+
+CL-WEBDAV together with this documentation can be downloaded
+from <a
+href="http://weitz.de/files/cl-webdav.tar.gz">http://weitz.de/files/cl-webdav.tar.gz</a>. The
+current version is 0.1.2.  It depends
+on <a href="http://common-lisp.net/project/cxml/">Closure
+XML</a>, <a href="http://weitz.de/cl-fad/">CL-FAD</a>,
+and <a href="http://weitz.de/hunchentoot/">Hunchentoot</a>, and can be
+compiled and loaded with <a href="http://www.cliki.net/asdf">ASDF</a>.
+<p>
+A <a href="http://www.selenic.com/mercurial/wiki/">Mercurial</a>
+repository of older versions is available
+at <a
+href="http://arcanes.fr.eu.org/~pierre/2007/02/weitz/">http://arcanes.fr.eu.org/~pierre/2007/02/weitz/</a>
+thanks to Pierre Thierry.
+
+<br>&nbsp;<br><h3><a class=none name="example">Example</a></h3>
+
+The simplest way to start a WebDAV server with CL-WEBDAV is probably this one:
+
+<pre>
+CL-USER 1 &gt; (<a href="http://www.lispworks.com/documentation/HyperSpec/Body/m_push.htm" class=noborder>push</a> (<a href="#create-dav-dispatcher" class=noborder>dav:create-dav-dispatcher</a> '<a href="#file-resource" class=noborder>dav:file-resource</a>) <a href="http://weitz.de/hunchentoot/#*dispatch-table*" class=noborder>tbnl:*dispatch-table*</a>)
+(#&lt;Closure ((METHOD CL-WEBDAV:CREATE-DAV-DISPATCHER (SYMBOL)) . 1) 200B8992&gt; HUNCHENTOOT:DEFAULT-DISPATCHER)
+
+CL-USER 2 &gt; (<a href="http://weitz.de/hunchentoot/#start-server" class=noborder>tbnl:start-server</a> :port 4242)
+#&lt;HUNCHENTOOT::SERVER 200BCBCF&gt;
+</pre>
+
+You should now be able to connect
+to <code>http://localhost:4242/</code> using a DAV client
+like <a href="http://www.webdav.org/cadaver/">cadaver</a> and you
+should see the files in the <code>/tmp/</code> directory.
+
+<br>&nbsp;<br><h3><a name="mail" class=none>Support and mailing lists</a></h3>
+
+For questions, bug reports, feature requests, improvements, or patches
+please use
+the <a
+href="http://common-lisp.net/mailman/listinfo/tbnl-devel">tbnl-devel
+mailing list</a>. If you want to be notified about future releases
+subscribe to
+the <a
+href="http://common-lisp.net/mailman/listinfo/tbnl-announce">tbnl-announce
+mailing list</a>. These mailing lists were made available thanks to
+the services of <a href="http://common-lisp.net/">common-lisp.net</a>.
+You can <b>search</b> the devel mailing
+list <a
+href="http://google.com/coop/cse?cx=002927904911724867201%3A0l5rif_cxj0">here</a>
+(thanks to Tiarnán Ó Corráin).
+<p>
+If you want to send patches, please <a href="http://weitz.de/patches.html">read this first</a>.
+
+<br>&nbsp;<br><h3><a class=none name="status">History and current status</a></h3>
+
+I was asked to give
+a <a
+href="http://www.international-lisp-conference.org/2007/tutorials#building">tutorial</a>
+at the <a href="http://weitz.de/ilc07.html">International Lisp
+Conference 2007</a> in Cambridge, and - as it was
+about <a href="http://weitz.de/hunchentoot/">Hunchentoot</a> - spent
+two nights in March to come up with a nice example of what one could do
+with Hunchentoot.  The result was basically a working, albeit
+shaky version of what CL-WEBDAV is now.  (I chose a WebDAV server
+because I had already written one in, cough, Perl a couple of years
+before, so I more or less knew what I had to do.)
+<p>
+I ended up not using CL-WEBDAV for the tutorial, though, as I came to
+the conclusion that there was too much stuff in it that would distract
+from the actual subject.  But as it was more or less complete, I
+invested some more time for testing, polishing, cleanup, and
+documentation, and then released it.
+<p>
+The initial release has been tested mildly
+with <a
+href="http://www.lispworks.com/products/lispworks.html">LispWorks</a>
+on Windows and with <a href="http://www.sbcl.org/">SBCL</a> on Linux
+against <a
+href="http://www.webdav.org/cadaver/">cadaver</a>, <a
+href="http://www.webdrive.com/">WebDrive</a>, and
+the <a
+href="http://en.wikipedia.org/wiki/WebDAV#Windows_XP_and_the_.22mini_redirector.22">native
+Windows&nbsp;XP client</a>.  I currently (April 2007) don't use CL-WEBDAV
+myself, so I can't say much about its usefulness, but here's a list of
+potential pitfalls that come to mind:
+<ul>
+  <li>CL-WebDAV is
+  only <a
+  href="http://www.greenbytes.de/tech/webdav/rfc2518.html#dav.compliance.classes">class&nbsp;1
+  compliant</a> at the moment, i.e. there's no support for locks.
+  (And as a consequence it won't work with the native client of
+  OS&nbsp;X IIRC - I don't have a Mac to test with.) Class&nbsp;2
+  compliance shouldn't be too hard to add, though.  You can bribe me
+  if you desperately need it... :)
+  <li>There's no portable way to implement a
+  correct <a
+  href="#resource-creation-date"><code>RESOURCE-CREATION-DATE</code></a>
+  method for <a href="#file">file resources</a>, but it can certainly
+  be done using implementation-specific functionality.  I'll happily
+  accept <a href="http://weitz.de/patches.html">patches</a> for this.
+  <li><a href="#xml">XML handling</a> in CL-WEBDAV isn't particularly
+  efficient and elegant, but I don't expect this to be an issue, as
+  the XML documents exchanged between WebDAV clients and servers are
+  usually pretty small.
+  <li>The <a href="#file-resource"><code>FILE-RESOURCE</code></a>
+  class doesn't use Common Lisp's
+  <a
+  href="http://www.lispworks.com/documentation/HyperSpec/Body/19_b.htm">pathname
+  algebra</a> but rather deals with strings for obvious reasons.
+  Again, I'll gladly
+  accept <a href="http://weitz.de/patches.html">patches</a> to make
+  this more elegant.
+  <li>There are several <a class=none name="ms">issues</a> with
+  the <a
+  href="http://www.greenbytes.de/tech/webdav/webdav-redirector-list.html">"WebDAV
+  Mini-Redirector"</a> of Windows XP and
+  Microsoft's <a
+  href="http://www.greenbytes.de/tech/webdav/webfolder-client-list.html">"Web
+  Folder Client"</a> (follow both links for more info).  These are
+  obviously not specific to CL-WEBDAV, but you should be aware of them
+  before you send <a href="#mail">bug reports</a>...
+</ul>
+
+<br>&nbsp;<br><h3><a class=none name="reference">Function and variable reference</a></h3>
+
+<h4><a class=none name="resources">Resources</a></h4>
+
+CL-WEBDAV uses a CLOS-based approach to deal with the resources on the
+server.
+Every <a href="http://weitz.de/hunchentoot/#handlers">handler</a>
+instantiates (based on the request sent by the client) one or more
+objects of a class which is a <a href="#*resource-class*">subclass</a>
+of <a href="#resource"><code>RESOURCE</code></a> and then calls
+generic functions on these object to actually manipulate the resources
+represented by these objects.  So, in order to implement your own
+WebDAV server, you are supposed to
+subclass <a href="#resource"><code>RESOURCE</code></a> and implement a
+couple of methods.  CL-WEBDAV comes with
+two <a href="#file">example</a> <a href="#auth">classes</a> which
+demonstrate how this can be done.
+
+<!-- Entry for RESOURCE -->
+
+<p><br>[Standard class]<br><a class=none name='resource'><b>resource</b></a>
+<blockquote><br>
+
+This is the base class you'll have to subclass if you want to create
+your own custom WebDAV server.  Each object of this class represents
+one resource on the server and most of the time these objects are
+created by the server using only the <code>:SCRIPT-NAME</code>
+initarg.  If you need more initialization to happen, write an <code>:AFTER</code>
+method for <a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_init_i.htm"><code>INITIALIZE-INSTANCE</code></a>.
+<p>
+See the file <a href="#file"><code>file-resources.lisp</code></a> for an example of a subclass
+of <a href="#resource"><code>RESOURCE</code></a>.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE -->
+
+<!-- Entry for RESOURCE-SCRIPT-NAME -->
+
+<p><br>[Generic accessor]<br><a class=none name='resource-script-name'><b>resource-script-name</b> <i>resource</i> =&gt; <i>script-name</i></a>
+<br><a class=none><tt>(setf (</tt><b>resource-script-name</b> <i>resource</i><tt>)</tt> <i>script-name</i><tt>)</tt></a>
+<blockquote><br>
+
+The base class <a href="#resource"><code>RESOURCE</code></a> has only
+one slot which can be manipulated with this accessor.  If a resource
+is created by the server, then it will fill this slot with
+the <a href="http://weitz.de/hunchentoot/#script-name">script name</a>
+that was used to access the resource</a>.  In this case you should
+only read the slot's value.
+<p>
+If you create your own <a href="#resource"><code>RESOURCE</code></a>
+objects (for example
+in <a href="#resource-children"><code>RESOURCE-CHILDREN</code></a>),
+you should set the value of this slot to a string that could be used
+as a script name to retrieve the resource.  There are several places
+where CL-WEBDAV is calling this function internally, so it is
+important that you use a meaningful value.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-SCRIPT-NAME -->
+
+<!-- Entry for *RESOURCE-CLASS* -->
+
+<p><br>[Special variable]<br><a class=none name='*resource-class*'><b>*resource-class*</b></a>
+<blockquote><br>
+
+Whenever a DAV handler is executed, this variable should be bound to
+the resource class which is to be used.  If you're
+using <a
+href="#create-dav-dispatcher"><code>CREATE-DAV-DISPATCHER</code></a>,
+this will already be taken care of for you, so you can ignore this
+variable.
+
+</blockquote>
+
+<!-- End of entry for *RESOURCE-CLASS* -->
+
+
+
+<h4 class=none><a class=none name="mandatory">Mandatory methods</a></h4>
+
+This subsection lists all generic functions which <em>must</em> be
+specialized for your own resource classes.  If you think that this is
+too much work, you should
+subclass <a href="#file-resource"><code>FILE-RESOURCE</code></a> where
+this work is already done for you.
+
+<!-- Entry for RESOURCE-EXISTS -->
+
+<p><br>[Generic function]<br><a class=none name='resource-exists'><b>resource-exists</b> <i>resource</i> =&gt; <i>generalized-boolean</i></a>
+<blockquote><br>
+
+This function must return a true value if the resource <code><i>resource</i></code> exists
+on the server and <code>NIL</code> otherwise.  You <em>must</em> specialize this generic
+function for your own classes.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-EXISTS -->
+
+<!-- Entry for RESOURCE-CHILDREN -->
+
+<p><br>[Generic function]<br><a class=none name='resource-children'><b>resource-children</b> <i>resource</i> =&gt; <i>children</i></a>
+<blockquote><br>
+
+This function must return a list of all children
+of <code><i>resource</i></code> (which themselves
+are <a href="#resource"><code>RESOURCE</code></a> objects).  You <em>must</em>
+specialize this generic function for your own classes.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-CHILDREN -->
+
+<!-- Entry for RESOURCE-PARENT -->
+
+<p><br>[Generic function]<br><a class=none name='resource-parent'><b>resource-parent</b> <i>resource</i> =&gt; <i>parent</i></a>
+<blockquote><br>
+
+This function must return a <a href="#resource"><code>RESOURCE</code></a> object
+which is the parent resource of <code><i>resource</i></code> or <code>NIL</code> if there is no
+parent.  You <em>must</em> specialize this generic function for your own
+classes.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-PARENT -->
+
+<!-- Entry for RESOURCE-COLLECTION-P -->
+
+<p><br>[Generic function]<br><a class=none name='resource-collection-p'><b>resource-collection-p</b> <i>resource</i> =&gt; <i>generalized-boolean</i></a>
+<blockquote><br>
+
+This function must return a true value iff the
+resource <code><i>resource</i></code> is a collection.  You <em>must</em> specialize this
+generic function for your own classes.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-COLLECTION-P -->
+
+<!-- Entry for RESOURCE-WRITE-DATE -->
+
+<p><br>[Generic function]<br><a class=none name='resource-write-date'><b>resource-write-date</b> <i>resource</i> =&gt; <i>universal-time</i></a>
+<blockquote><br>
+
+This function must return a <a href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_u.htm#universal_time">universal time</a>
+denoting the time the resource <code><i>resource</i></code> was last modified.  You
+<em>must</em> specialize this generic function for your own classes.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-WRITE-DATE -->
+
+<!-- Entry for RESOURCE-LENGTH -->
+
+<p><br>[Generic function]<br><a class=none name='resource-length'><b>resource-length</b> <i>resource</i> =&gt; <i>length</i></a>
+<blockquote><br>
+
+This function must return an integer denoting
+the length of the resource <code><i>resource</i></code> in octets.  You <em>must</em>
+specialize this generic function for your own classes.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-LENGTH -->
+
+<!-- Entry for RESOURCE-DISPLAY-NAME -->
+
+<p><br>[Generic function]<br><a class=none name='resource-display-name'><b>resource-display-name</b> <i>resource</i> =&gt; <i>display-name</i></a>
+<blockquote><br>
+
+This function must return a string which,
+according to the <a href="http://www.greenbytes.de/tech/webdav/rfc2518.html">WebDAV RFC</a>, &quot;provides a name for the resource
+that is suitable for presentation to a user.&quot;  You <em>must</em>
+specialize this generic function for your own classes.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-DISPLAY-NAME -->
+
+<!-- Entry for SEND-CONTENT -->
+
+<p><br>[Generic function]<br><a class=none name='send-content'><b>send-content</b> <i>resource stream</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function is called for GET requests and
+must send the complete contents of the (non-collection) resource
+<code><i>resource</i></code> to the (<a href="http://weitz.de/flexi-streams/">flexi</a>) stream <code><i>stream</i></code>.  The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for SEND-CONTENT -->
+
+<!-- Entry for GET-CONTENT -->
+
+<p><br>[Generic function]<br><a class=none name='get-content'><b>get-content</b> <i>resource stream length</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function is called for PUT requests and
+must read <code><i>length</i></code> octets of data from the (<a href="http://weitz.de/flexi-streams/">flexi</a>) stream <code><i>stream</i></code>
+and store them in a place appropriate for the resource
+<code><i>resource</i></code>.  The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for GET-CONTENT -->
+
+<!-- Entry for REMOVE-RESOURCE -->
+
+<p><br>[Generic function]<br><a class=none name='remove-resource'><b>remove-resource</b> <i>resource</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must completely remove the
+resource <code><i>resource</i></code>.  It doesn't have to deal with dead <a href="#properties">properties</a>,
+and it can assume that <code><i>resource</i></code> doesn't have children in case
+it's a collection.  The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for REMOVE-RESOURCE -->
+
+<!-- Entry for MOVE-RESOURCE -->
+
+<p><br>[Generic function]<br><a class=none name='move-resource'><b>move-resource</b> <i>source destination</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must &quot;move&quot; the (contents of
+the) resource <code><i>source</i></code> in such a way that it can in the future be
+accessed as <code><i>destination</i></code>.  It doesn't have to deal with dead
+<a href="#properties">properties</a>, and it can assume that <code><i>source</i></code> doesn't have children
+in case it's a collection. The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for MOVE-RESOURCE -->
+
+<!-- Entry for COPY-RESOURCE -->
+
+<p><br>[Generic function]<br><a class=none name='copy-resource'><b>copy-resource</b> <i>source destination</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must &quot;copy&quot; the (contents of
+the) resource <code><i>source</i></code> in such a way that the copy can in the
+future be accessed as <code><i>destination</i></code>.  It doesn't have to deal with
+dead <a href="#properties">properties</a>, and it can assume that <code><i>source</i></code> doesn't have
+children in case it's a collection. The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for COPY-RESOURCE -->
+
+
+<!-- Entry for CREATE-COLLECTION -->
+
+<p><br>[Generic function]<br><a class=none name='create-collection'><b>create-collection</b> <i>resource</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must create a collection
+resource that in the future can be accessed as <code><i>resource</i></code>.  The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for CREATE-COLLECTION -->
+
+<!-- Entry for ACCEPT-REQUEST-P -->
+
+<p><br>[Generic function]<br><a class=none name='accept-request-p'><b>accept-request-p</b> <i>resource-class request</i> =&gt; <i>generalized-boolean</i></a>
+<blockquote><br>
+
+This must be a function which accepts a
+<a href="http://weitz.de/hunchentoot/">Hunchentoot</a> <a href="http://weitz.de/hunchentoot/#requests">request object</a> <code><i>request</i></code> and returns a generalized
+boolean denoting whether <code><i>request</i></code> is a resource the DAV
+server wants to handle. 
+It will be called by the dispatcher created with <a href="#create-dav-dispatcher"><code>CREATE-DAV-DISPATCHER</code></a>.
+ Usually, you'll want to look at the
+<a href="http://weitz.de/hunchentoot/#script-name">script name</a> of
+the request or something like that - see the class <a href="#file-resource"><code>FILE-RESOURCE</code></a> for
+an example.
+<p>
+Note that you specialize this function on the resource <em>class</em>
+(or its name) and not on the resource like the other functions in this subsection.
+
+</blockquote>
+
+<!-- End of entry for ACCEPT-REQUEST-P -->
+
+<h4 class=none><a class=none name="optional">Optional methods</a></h4>
+
+This subsection lists all generic functions which <em>can</em> be
+specialized for your own resource classes.  You don't necessarily have
+to because they have default methods, but in some cases it might make
+sense.
+
+
+<!-- Entry for RESOURCE-CREATION-DATE -->
+
+<p><br>[Generic function]<br><a class=none name='resource-creation-date'><b>resource-creation-date</b> <i>resource</i> =&gt; <i>universal-time</i></a>
+<blockquote><br>
+
+This function must return
+a <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_u.htm#universal_time">universal
+time</a> denoting the time the resource <code><i>resource</i></code>
+was created.  There's a default method which
+returns <a
+href="#resource-write-date"><code>RESOURCE-WRITE-DATE</code></a>, but
+most likely you'll want to specialize this for you own classes and return a more meaningful value.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-CREATION-DATE -->
+
+<!-- Entry for RESOURCE-CONTENT-TYPE -->
+
+<p><br>[Generic function]<br><a class=none name='resource-content-type'><b>resource-content-type</b> <i>resource</i> =&gt; <i>type-string</i></a>
+<blockquote><br>
+
+This function must return a string denoting
+the <a href="http://en.wikipedia.org/wiki/MIME#Content-Type">MIME
+type</a> of the resource <code><i>resource</i></code>.  It will only
+be called if <code><i>resource</i></code> is <em>not</em> a
+collection.  There's a default method which always returns
+<code>"application/octet-stream"</code>, but most likely you'll want to specialize
+this for your own classes.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-CONTENT-TYPE -->
+
+<!-- Entry for RESOURCE-CONTENT-LANGUAGE -->
+
+<p><br>[Generic function]<br><a class=none name='resource-content-language'><b>resource-content-language</b> <i>resource</i> =&gt; <i>language</i></a>
+<blockquote><br>
+
+This function should return either <code>NIL</code> or a
+<em>language tag</em> as defined in section&nbsp;14.13
+of <a href="http://www.faqs.org/rfcs/rfc2068.html">RFC&nbsp;2068</a>.
+If the value returned by this function is not <code>NIL</code>, it
+will also be used as the <code>Content-Language</code> header returned
+for GET requests.  There's a default method which always
+returns <code>NIL</code>.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-CONTENT-LANGUAGE -->
+
+
+<!-- Entry for RESOURCE-SOURCE -->
+
+<p><br>[Generic function]<br><a class=none name='resource-source'><b>resource-source</b> <i>resource</i> =&gt; <i>xmls-node</i></a>
+<blockquote><br>
+
+This function should return either <code>NIL</code> or a DAV
+&quot;source&quot; XML node (structured as an <a href="#xml">XMLS
+node</a>) that, according to
+the <a href="http://www.greenbytes.de/tech/webdav/rfc2518.html">WebDAV
+RFC</a>, &quot;identifies the resource that contains the unprocessed
+source of the link's source.&quot; There's a default method which
+always returns <code>NIL</code>.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-SOURCE -->
+
+<!-- Entry for RESOURCE-ETAG -->
+
+<p><br>[Generic function]<br><a class=none name='resource-etag'><b>resource-etag</b> <i>resource</i> =&gt; <i>etag</i></a>
+<blockquote><br>
+
+This function should return an ETag for the
+resource <code><i>resource</i></code> or <code>NIL</code>.  If the
+value returned by this function is not <code>NIL</code>, it will also
+be used as the <code>ETag</code> header returned for GET requests.
+There's a default method which synthesizes a value based on the script
+name and the write date of the resource, and in most cases you
+probably don't need to specialize this function.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-ETAG -->
+
+<!-- Entry for RESOURCE-TYPE -->
+
+<p><br>[Generic function]<br><a class=none name='resource-type'><b>resource-type</b> <i>resource</i> =&gt; <i>xmls-node</i></a>
+<blockquote><br>
+
+This function should return either NIL or a DAV
+&quot;resourcetype&quot; XML node (structured as
+an <a href="#xml">XMLS node</a>) that, according to
+the <a href="http://www.greenbytes.de/tech/webdav/rfc2518.html">WebDAV
+RFC</a>, &quot;specifies the nature of the resource.&quot; There's a
+default method which returns something fitting for collections and <code>NIL</code>
+otherwise, and in most cases you probably don't need to specialize
+this function.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-TYPE -->
+<!-- Entry for RESOURCE-URI-PREFIX -->
+
+<p><br>[Generic function]<br><a class=none name='resource-uri-prefix'><b>resource-uri-prefix</b> <i>resource</i> =&gt; <i>prefix-string</i></a>
+<blockquote><br>
+
+This function must return a string which is
+the part of a resource's HTTPS or HTTPS URI that comprises the
+scheme, the host, and the port and ends with a slash - something
+like <code>&quot;http://localhost:4242/&quot;</code> or <code>&quot;https://www.lisp.org/&quot;</code>.
+<p>
+The default method synthesizes this from the information
+<a href="http://weitz.de/hunchentoot/">Hunchentoot</a> provides and
+usually you only have to write your own method if you're sitting
+behind a proxy.
+
+</blockquote>
+
+<!-- End of entry for RESOURCE-URI-PREFIX -->
+
+
+
+
+<h4><a class=none name="xml">XML handling</a></h4>
+
+When dealing with <a href="#properties">properties</a> or for some
+methods like <a href="#resource-type"><code>RESOURCE-TYPE</code></a>
+you'll need to handle <a href="http://www.w3.org/TR/REC-xml/">XML</a>
+data.  You can probably get away without it, but in case you need them,
+this section collects the relevant CL-WEBDAV functions to manipulate
+XML.
+<p>
+We're representing XML as <em>XMLS nodes</em> which are very similar
+to
+CXML's <a
+href="http://common-lisp.net/project/cxml/xmls-compat.html">XMLS
+nodes</a> but try to get namespaces right because they don't purport
+to be compatible
+with <a href="http://common-lisp.net/project/xmls/">XMLS</a>.
+
+
+<!-- Entry for XMLS-NODE-P -->
+
+<p><br>[Function]<br><a class=none name='xmls-node-p'><b>xmls-node-p</b> <i>thing</i> =&gt; <i>generalized-boolean</i></a>
+<blockquote><br>
+
+Checks whether <code><i>thing</i></code> is an XMLS node.
+
+</blockquote>
+
+<!-- End of entry for XMLS-NODE-P -->
+
+<!-- Entry for LOCAL-NAME -->
+
+<p><br>[Function]<br><a class=none name='local-name'><b>local-name</b> <i>thing</i> =&gt; <i>local-name</i></a>
+<blockquote><br>
+
+Returns the local name of the XMLS node or attribute <code><i>thing</i></code>.
+
+</blockquote>
+
+<!-- End of entry for LOCAL-NAME -->
+
+
+<!-- Entry for NAMESPACE-URI -->
+
+<p><br>[Function]<br><a class=none name='namespace-uri'><b>namespace-uri</b> <i>thing</i> =&gt; <i>namespace-uri</i></a>
+<blockquote><br>
+
+Returns the namespace URI (which can be <code>NIL</code>) of the XMLS node
+or attribute <code><i>thing</i></code>.
+
+</blockquote>
+
+<!-- End of entry for NAMESPACE-URI -->
+
+
+<!-- Entry for NODE-ATTRIBUTES -->
+
+<p><br>[Accessor]<br><a class=none name='node-attributes'><b>node-attributes</b> <i>xmls-node</i> =&gt; <i>attributes</i></a>
+<br><a class=none><tt>(setf (</tt><b>node-attributes</b> <i>xmls-node</i><tt>)</tt> <i>attributes</i><tt>)</tt></a>
+<blockquote><br>
+
+Returns or sets the list of attributes of the XMLS node <code><i>xmls-node</i></code>.
+
+</blockquote>
+
+<!-- End of entry for NODE-ATTRIBUTES -->
+
+
+<!-- Entry for NODE-CHILDREN -->
+
+<p><br>[Accessor]<br><a class=none name='node-children'><b>node-children</b> <i>xmls-node</i> =&gt; <i>children</i></a>
+<br><a class=none><tt>(setf (</tt><b>node-children</b> <i>xmls-node</i><tt>)</tt> <i>children</i><tt>)</tt></a>
+<blockquote><br>
+
+Returns or sets the list of children of the XMLS node <code><i>xmls-node</i></code>.
+
+</blockquote>
+
+<!-- End of entry for NODE-CHILDREN -->
+
+<!-- Entry for DAV-NODE -->
+
+<p><br>[Function]<br><a class=none name='dav-node'><b>dav-node</b> <i>local-name <tt>&amp;rest</tt> children</i> =&gt; <i>xmls-node</i></a>
+<blockquote><br>
+
+Returns an XMLS node with the
+local name <code><i>local-name</i></code>, the namespace URI <code>&quot;DAV:&quot;</code>, and the
+children <code><i>children</i></code> (a list of XMLS nodes and/or strings).
+
+</blockquote>
+
+<!-- End of entry for DAV-NODE -->
+
+
+
+<!-- Entry for PARSE-DAV -->
+
+<p><br>[Function]<br><a class=none name='parse-dav'><b>parse-dav</b> <i>octets <tt>&amp;optional</tt> root-name</i> =&gt; <i>xmls-node</i></a>
+<blockquote><br>
+
+Accepts an array <code><i>octets</i></code> of octets representing a
+DAV XML node and converts it into the corresponding XMLS node.
+According to
+the <a href="http://www.greenbytes.de/tech/webdav/rfc2518.html">WebDAV
+RFC</a>, non-DAV elements are skipped unless they appear in positions
+(like in a &quot;prop&quot; element) where arbitrary elements are
+allowed.  If <code><i>root-name</i></code> is given, it should be the
+local name (a string) of a DAV node.  In this case, the XML is
+validated.  This function is expected to be called from within a
+Hunchentoot request and throws to
+the <a
+href="http://weitz.de/hunchentoot/#handler-done"><code>HANDLER-DONE</code></a>
+tag with a return code of
+<a href="http://weitz.de/hunchentoot/#+http-bad-request+"><code>+HTTP-BAD-REQUEST+</code></a> if a parsing error occurs or if the XML is
+invalid.
+<p>
+This is kind of the inverse operation to <a href="#serialize-xmls-node"><code>SERIALIZE-XMLS-NODE</code></a>.
+
+</blockquote>
+
+<!-- End of entry for PARSE-DAV -->
+
+<!-- Entry for SERIALIZE-XMLS-NODE -->
+
+<p><br>[Function]<br><a class=none name='serialize-xmls-node'><b>serialize-xmls-node</b> <i>xmls-node</i> =&gt; <i>octet-vector</i></a>
+<blockquote><br>
+
+Serializes <code><i>xmls-node</i></code> to a vector of octets which is returned.
+<p>
+This is kind of the inverse operation to <a href="#parse-dav"><code>PARSE-DAV</code></a> and very
+similar to <a href="http://common-lisp.net/project/cxml/xmls-compat.html"><code>CXML-XMLS:MAP-NODE</code></a>.
+
+</blockquote>
+
+<!-- End of entry for SERIALIZE-XMLS-NODE -->
+
+
+
+
+<h4><a class=none name="properties">Properties</a></h4>
+
+CL-WEBDAV has default methods to store, retrieve, and
+manipulate <a
+href="http://www.greenbytes.de/tech/webdav/rfc2518.html#rfc.section.3">dead
+properties</a> of resources as requested by the client.  However,
+these default methods simply keep all properties in one global hash
+table without persisting them.  For a production server, you
+definitely want to specialize the generic functions listed in this section for <a href="#resources">your resource class</a>.
+
+<!-- Entry for GET-DEAD-PROPERTIES -->
+
+<p><br>[Generic function]<br><a class=none name='get-dead-properties'><b>get-dead-properties</b> <i>resource</i> =&gt; <i>property-list</i></a>
+<blockquote><br>
+
+This function must return all dead properties
+of the resource <code><i>resource</i></code> as a list of XML elements structured as
+<a href="#xml">XMLS nodes</a>.  There's a default method but you
+should definitely specialize this for production servers.
+
+</blockquote>
+
+<!-- End of entry for GET-DEAD-PROPERTIES -->
+
+<!-- Entry for REMOVE-DEAD-PROPERTY -->
+
+<p><br>[Generic function]<br><a class=none name='remove-dead-property'><b>remove-dead-property</b> <i>resource property</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must remove the currently stored dead property
+designated by <code><i>property</i></code> (an <a href="#xml">XMLS
+node</a>) of the resource <code><i>resource</i></code>.  There's a
+default method but you should definitely specialize this for
+production servers.  The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for REMOVE-DEAD-PROPERTY -->
+
+
+
+<!-- Entry for SET-DEAD-PROPERTY -->
+
+<p><br>[Generic function]<br><a class=none name='set-dead-property'><b>set-dead-property</b> <i>resource property</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must replace the currently stored dead property
+designated by <code><i>property</i></code> (an <a href="#xml">XMLS
+node</a>) of the resource <code><i>resource</i></code>
+with <code><i>property</i></code>, i.e. <code><i>property</i></code>
+doubles as the property itself and as the property designator.
+There's a default method but you should definitely specialize this for
+production servers.  The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for SET-DEAD-PROPERTY -->
+
+
+
+<!-- Entry for REMOVE-DEAD-PROPERTIES -->
+
+<p><br>[Generic function]<br><a class=none name='remove-dead-properties'><b>remove-dead-properties</b> <i>resource</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must remove all dead properties of the
+resource <code><i>resource</i></code>.  There's a default method but
+you should definitely specialize this for production servers.  The
+return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for REMOVE-DEAD-PROPERTIES -->
+
+<!-- Entry for MOVE-DEAD-PROPERTIES -->
+
+<p><br>[Generic function]<br><a class=none name='move-dead-properties'><b>move-dead-properties</b> <i>source destination</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must move all dead properties of the
+resource <code><i>source</i></code> to the
+resource <code><i>destination</i></code>.  There's a default method
+but you should definitely specialize this for production servers.  The
+return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for MOVE-DEAD-PROPERTIES -->
+
+<!-- Entry for COPY-DEAD-PROPERTIES -->
+
+<p><br>[Generic function]<br><a class=none name='copy-dead-properties'><b>copy-dead-properties</b> <i>source destination</i> =&gt; <i>whatever</i></a>
+<blockquote><br>
+
+This function must copy all dead properties of
+the resource <code><i>source</i></code> to the resource <code><i>destination</i></code>.  There's a
+default method but you should definitely specialize this for
+production servers.  The return value is irrelevant.
+
+</blockquote>
+
+<!-- End of entry for COPY-DEAD-PROPERTIES -->
+
+
+
+<h4><a class=none name="handlers">Handlers and dispatchers</a></h4>
+
+To actually <em>use</em> your WebDAV server, you'll need to add a
+corresponding dispatcher
+to <a
+href="http://weitz.de/hunchentoot/">Hunchentoot's</a> <a
+href="http://weitz.de/hunchentoot/#*dispatch-table*">dispatch
+table</a>.  This is
+what <a
+href="#create-dav-dispatcher"><code>CREATE-DAV-DISPATCHER</code></a>
+is for.  The other functions and variables in this section you'll
+rarely need, if ever.
+
+
+<!-- Entry for CREATE-DAV-DISPATCHER -->
+
+<p><br>[Generic function]<br><a class=none name='create-dav-dispatcher'><b>create-dav-dispatcher</b> <i>resource-class <tt>&amp;optional</tt> ms-workaround-p</i> =&gt; <i>dispatcher</i></a>
+<blockquote><br>
+
+Creates and returns
+a <a
+href="http://weitz.de/hunchentoot/#*dispatch-table*">dispatcher</a>
+for the class <code><i>resource-class</i></code> which must be a subclass of <a href="#resource"><code>RESOURCE</code></a>.  If
+<code><i>ms-workaround-p</i></code> is true (which is the default),
+OPTIONS requests are <em>always</em> handled irrespective of the results of
+<a href="#accept-request-p"><code>ACCEPT-REQUEST-P</code></a> - this
+is needed to work around <a href="#ms">problems</a> with some Microsoft DAV clients.
+
+</blockquote>
+
+<!-- End of entry for CREATE-DAV-DISPATCHER -->
+
+
+<!-- Entry for OPTIONS-HANDLER -->
+
+<p><br>[Function]<br><a class=none name='options-handler'><b>options-handler</b> <i></i> =&gt; <i>nil</i></a>
+<blockquote><br>
+
+The handler for OPTIONS requests.  Output is basically
+determined by <a href="#*allowed-methods*"><code>*ALLOWED-METHODS*</code></a> and <a href="#*dav-compliance-classes*"><code>*DAV-COMPLIANCE-CLASSES*</code></a>.
+
+</blockquote>
+
+<!-- End of entry for OPTIONS-HANDLER -->
+
+<!-- Entry for OPTIONS-DISPATCHER -->
+
+<p><br>[Function]<br><a class=none name='options-dispatcher'><b>options-dispatcher</b> <i>request</i> =&gt; <i>handler</i></a>
+<blockquote><br>
+
+A <a href="http://weitz.de/hunchentoot/#*dispatch-table*">dispatcher</a> which'll dispatch to <a href="#options-handler"><code>OPTIONS-HANDLER</code></a> in case of
+an OPTIONS request and decline otherwise.  This is only useful if
+you want to cater to <a href="#ms">Microsoft DAV clients</a> which always
+unconditionally send OPTIONS requests to the <code>"/"</code> root
+resource.  Sigh...
+<p>
+If you use <a href="#create-dav-dispatcher"><code>CREATE-DAV-DISPATCHER</code></a> with a true value for <code><i>ms-workaround-p</i></code>, you don't need this dispatcher.
+
+</blockquote>
+
+<!-- End of entry for OPTIONS-DISPATCHER -->
+
+<!-- Entry for *ALLOWED-METHODS* -->
+
+<p><br>[Special variable]<br><a class=none name='*allowed-methods*'><b>*allowed-methods*</b></a>
+<blockquote><br>
+
+The list of methods (as keywords) returned by the <code>Allow</code>
+header in case of OPTIONS requests (and also utilized by the
+handler for MKCOL).  
+The initial value is the list
+<pre>
+(:options :get :head :delete :propfind :proppatch :put :copy :move :mkcol)
+</pre>
+Can be adapted to allow for more methods,
+but for a WebDAV server at least the methods above should be
+listed.
+
+
+</blockquote>
+
+<!-- End of entry for *ALLOWED-METHODS* -->
+
+
+<!-- Entry for *DAV-COMPLIANCE-CLASSES* -->
+
+<p><br>[Special variable]<br><a class=none name='*dav-compliance-classes*'><b>*dav-compliance-classes*</b></a>
+<blockquote><br>
+
+A <em>sorted</em> list of DAV compliance classes reported in the
+<code>DAV</code> header when answering OPTIONS requests.  It doesn't
+make much sense to have more then class 1 in here as long as there's
+<a href="#status">no lock support</a>, i.e. the initial value is the list <code>(1)</code>.
+
+</blockquote>
+
+<!-- End of entry for *DAV-COMPLIANCE-CLASSES* -->
+
+<h4><a class=none name="file">File resources</a></h4>
+
+The class <a href="#file-resource"><code>FILE-RESOURCE</code></a> maps
+URIs in a straightforward way to (a subtree of) your local file
+system.  This is probably the most common way to serve DAV resources,
+and if you want to do it like this, you can
+subclass <a href="#file-resource"><code>FILE-RESOURCE</code></a> and
+adapt it without the need to
+implement <a href="#mandatory">loads of methods</a>.  Of course, you
+can go wild and store resources in a <a href="http://common-lisp.net/project/rucksack/">database</a>, or generate them
+dynamically, or whatever, but then this class is not for you and you
+have to invent your own subclass
+of <a href="#resource"><code>RESOURCE</code></a>.
+<p>
+Again, this is not meant to be ready for a production system.  You
+should <em>at least</em> make sure
+that <a href="#properties">properties</a> are persisted.
+
+<!-- Entry for FILE-RESOURCE -->
+
+<p><br>[Standard class]<br><a class=none name='file-resource'><b>file-resource</b></a>
+<blockquote><br>
+
+A subclass of <a href="#resource"><code>RESOURCE</code></a> representing resources
+which are mapped to a subtree of the local file system.
+
+</blockquote>
+
+<!-- End of entry for FILE-RESOURCE -->
+
+
+
+<!-- Entry for FILE-RESOURCE-BASE-PATH-NAMESTRING -->
+
+<p><br>[Generic function]<br><a class=none name='file-resource-base-path-namestring'><b>file-resource-base-path-namestring</b> <i>resource-class</i> =&gt; <i>namestring</i></a>
+<blockquote><br>
+
+This generic function is called for subclasses of
+<a href="#file-resource"><code>FILE-RESOURCE</code></a> to determine
+the <em>base pathname</em> that's currently being used, i.e. the part
+of the filesystem where the files served by the DAV server are stored.
+The function must return
+the <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_n.htm#namestring">namestring</a>
+of
+the <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_t.htm#truename">truename</a>
+of
+an <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_a.htm#absolute">absolute</a>
+pathname denoting a directory, specifically it must return a string
+starting and ending with slashes.  (Note: This should work on Windows
+as well.)  You can specialize this function (either on the class or on
+the name of the class) if you want.
+<p>
+The default method returns the current value of
+<a href="#*file-resource-base-path-namestring*"><code>*FILE-RESOURCE-BASE-PATH-NAMESTRING*</code></a>.
+
+</blockquote>
+
+<!-- End of entry for FILE-RESOURCE-BASE-PATH-NAMESTRING -->
+
+<!-- Entry for *FILE-RESOURCE-BASE-PATH-NAMESTRING* -->
+
+<p><br>[Special variable]<br><a class=none name='*file-resource-base-path-namestring*'><b>*file-resource-base-path-namestring*</b></a>
+<blockquote><br>
+
+The value of this variable is the return value of the default method
+for <a
+href="#file-resource-base-path-namestring"><code>FILE-RESOURCE-BASE-PATH-NAMESTRING</code></a>.
+It should be
+the <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_n.htm#namestring">namestring</a>
+of
+the <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_t.htm#truename">truename</a>
+of
+an <a
+href="http://www.lispworks.com/documentation/HyperSpec/Body/26_glo_a.htm#absolute">absolute</a>
+pathname denoting a directory, specifically it must return a string
+starting and ending with slashes.  (Note: This should work on Windows
+as well.)
+<p>
+The initial value is the result of calling
+<pre>
+(<a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_namest.htm" class=noborder>namestring</a> (<a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_tn.htm" class=noborder>truename</a> (<a href="http://www.lispworks.com/documentation/HyperSpec/Body/f_ensu_1.htm" class=noborder>ensure-directories-exist</a> "/tmp/")))
+</pre>
+meaning that this directory will be created on your machine at load time if it
+doesn't exist (which is possible if you're on Windows and pretty
+unlikely on Linux or Unix).
+
+</blockquote>
+
+<!-- End of entry for *FILE-RESOURCE-BASE-PATH-NAMESTRING* -->
+
+
+
+<!-- Entry for FILE-RESOURCE-BASE-URI -->
+
+<p><br>[Generic function]<br><a class=none name='file-resource-base-uri'><b>file-resource-base-uri</b> <i>resource-class</i> =&gt; <i>uri</i></a>
+<blockquote><br>
+
+This generic function is called for subclasses of
+<a href="#file-resource"><code>FILE-RESOURCE</code></a> to determine
+the base URI that's currently being used, i.e. the prefix
+the <a href="http://weitz.de/hunchentoot/#script-name">script name</a>
+of a resource's URI must have in order to be valid.  (In other words:
+this URI represents the top-level collection of the DAV server.)  The
+function must return a string which starts with a slash if it's not
+empty and does <em>not</em> end with a slash and is <em>not</em>
+URL-encoded.  You can specialize this function (either on the class or
+on the name of the class) if you want.
+<p>
+The default method returns the current value of
+<a href="#*file-resource-base-uri*"><code>*FILE-RESOURCE-BASE-URI*</code></a>.
+
+</blockquote>
+
+<!-- End of entry for FILE-RESOURCE-BASE-URI -->
+
+
+<!-- Entry for *FILE-RESOURCE-BASE-URI* -->
+
+<p><br>[Special variable]<br><a class=none name='*file-resource-base-uri*'><b>*file-resource-base-uri*</b></a>
+<blockquote><br>
+
+The value of this variable is the return value of the default method
+for <a href="#file-resource-base-uri"><code>FILE-RESOURCE-BASE-URI</code></a>.  It should be a string which starts with a
+slash if it's not empty and does <em>not</em> end with a slash and is <em>not</em>
+URL-encoded.
+<p>
+The initial value is <code>""</code> (the empty string).
+
+</blockquote>
+
+<!-- End of entry for *FILE-RESOURCE-BASE-URI* -->
+
+
+
+
+<h4><a class=none name="auth">Authorized file resources</a></h4>
+
+Authorized file resources are specialized <a href="#file">file
+resources</a>, included in CL-WEBDAV solely for demonstration
+purposes.  DAV clients are required to authenticate themselves
+using <a
+href="http://en.wikipedia.org/wiki/Basic_authentication_scheme">basic
+HTTP authentication</a> (user names must only contain ASCII
+characters, decimal digits, underlines, and hyphens, and are
+case-insensitive, the password must be the same as the user name), and
+users are assigned their own private subtree of the file system.
+
+<!-- Entry for AUTHORIZED-FILE-RESOURCE -->
+
+<p><br>[Standard class]<br><a class=none name='authorized-file-resource'><b>authorized-file-resource</b></a>
+<blockquote><br>
+
+A subclass of <a href="#file-resource"><code>FILE-RESOURCE</code></a> representing file
+resources which are associated with a certain user.
+
+</blockquote>
+
+<!-- End of entry for AUTHORIZED-FILE-RESOURCE -->
+
+
+
+
+
+
+
+
+
+<br>&nbsp;<br><h3><a class=none name="index">Symbol index</a></h3>
+
+Here are all exported symbols of the CL-WEBDAV package in alphabetical
+order linked to their corresponding entries:
+
+    <ul>
+      <li><a href="#*allowed-methods*"><code>*allowed-methods*</code></a>
+      <li><a href="#*dav-compliance-classes*"><code>*dav-compliance-classes*</code></a>
+      <li><a href="#*file-resource-base-path-namestring*"><code>*file-resource-base-path-namestring*</code></a>
+      <li><a href="#*file-resource-base-uri*"><code>*file-resource-base-uri*</code></a>
+      <li><a href="#*resource-class*"><code>*resource-class*</code></a>
+      <li><a href="#accept-request-p"><code>accept-request-p</code></a>
+      <li><a href="#authorized-file-resource"><code>authorized-file-resource</code></a>
+      <li><a href="#copy-dead-properties"><code>copy-dead-properties</code></a>
+      <li><a href="#copy-resource"><code>copy-resource</code></a>
+      <li><a href="#create-collection"><code>create-collection</code></a>
+      <li><a href="#create-dav-dispatcher"><code>create-dav-dispatcher</code></a>
+      <li><a href="#dav-node"><code>dav-node</code></a>
+      <li><a href="#file-resource"><code>file-resource</code></a>
+      <li><a href="#file-resource-base-path-namestring"><code>file-resource-base-path-namestring</code></a>
+      <li><a href="#file-resource-base-uri"><code>file-resource-base-uri</code></a>
+      <li><a href="#get-content"><code>get-content</code></a>
+      <li><a href="#get-dead-properties"><code>get-dead-properties</code></a>
+      <li><a href="#iso-8601-date"><code>iso-8601-date</code></a>
+      <li><a href="#local-name"><code>local-name</code></a>
+      <li><a href="#move-dead-properties"><code>move-dead-properties</code></a>
+      <li><a href="#move-resource"><code>move-resource</code></a>
+      <li><a href="#namespace-uri"><code>namespace-uri</code></a>
+      <li><a href="#node-attributes"><code>node-attributes</code></a>
+      <li><a href="#node-children"><code>node-children</code></a>
+      <li><a href="#options-dispatcher"><code>options-dispatcher</code></a>
+      <li><a href="#options-handler"><code>options-handler</code></a>
+      <li><a href="#parse-dav"><code>parse-dav</code></a>
+      <li><a href="#remove-dead-properties"><code>remove-dead-properties</code></a>
+      <li><a href="#remove-dead-property"><code>remove-dead-property</code></a>
+      <li><a href="#remove-resource"><code>remove-resource</code></a>
+      <li><a href="#resource"><code>resource</code></a>
+      <li><a href="#resource-children"><code>resource-children</code></a>
+      <li><a href="#resource-collection-p"><code>resource-collection-p</code></a>
+      <li><a href="#resource-content-language"><code>resource-content-language</code></a>
+      <li><a href="#resource-content-type"><code>resource-content-type</code></a>
+      <li><a href="#resource-creation-date"><code>resource-creation-date</code></a>
+      <li><a href="#resource-display-name"><code>resource-display-name</code></a>
+      <li><a href="#resource-etag"><code>resource-etag</code></a>
+      <li><a href="#resource-exists"><code>resource-exists</code></a>
+      <li><a href="#resource-length"><code>resource-length</code></a>
+      <li><a href="#resource-parent"><code>resource-parent</code></a>
+      <li><a href="#resource-script-name"><code>resource-script-name</code></a>
+      <li><a href="#resource-source"><code>resource-source</code></a>
+      <li><a href="#resource-type"><code>resource-type</code></a>
+      <li><a href="#resource-uri-prefix"><code>resource-uri-prefix</code></a>
+      <li><a href="#resource-write-date"><code>resource-write-date</code></a>
+      <li><a href="#send-content"><code>send-content</code></a>
+      <li><a href="#serialize-xmls-node"><code>serialize-xmls-node</code></a>
+      <li><a href="#set-dead-property"><code>set-dead-property</code></a>
+      <li><a href="#xmls-node-p"><code>xmls-node-p</code></a>
+    </ul>
+
+
+
+<br>&nbsp;<br><h3><a class=none name="ack">Acknowledgements</a></h3>
+
+<p>
+This documentation was prepared with <a href="http://weitz.de/documentation-template/">DOCUMENTATION-TEMPLATE</a>.
+</p>
+<p>
+$Header: /usr/local/cvsrep/cl-webdav/doc/index.html,v 1.18 2007/10/21 21:20:59 edi Exp $
+<p><a href="http://weitz.de/index.html">BACK TO MY HOMEPAGE</a>
+
+</body>
+</html>

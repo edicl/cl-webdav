@@ -1,0 +1,11 @@
+Version 0.1.2
+2007-10-21
+Made compatible with current CXML (patch by David Lichteblau)
+
+Version 0.1.1
+2007-05-20
+Fixed typo in MKCOL-HANDLER (spotted by Ralf Mattes)
+
+Version 0.1.0
+2007-04-18
+First public release
