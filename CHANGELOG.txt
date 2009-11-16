@@ -1,3 +1,5 @@
+Changes to make CL-WEBDAV compatible with new Hunchentoot (Cyrus Harmon and Matthew Curry)
+
 Version 0.1.2
 2007-10-21
 Made compatible with current CXML (patch by David Lichteblau)
