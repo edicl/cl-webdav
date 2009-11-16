@@ -1,7 +1,7 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-WEBDAV; Base: 10 -*-
 ;;; $Header: /usr/local/cvsrep/cl-webdav/properties.lisp,v 1.9 2008/06/25 08:04:25 edi Exp $
 
-;;; Copyright (c) 2007-2008, Dr. Edmund Weitz.  All rights reserved.
+;;; Copyright (c) 2007-2009, Dr. Edmund Weitz.  All rights reserved.
 
 ;;; Redistribution and use in source and binary forms, with or without
 ;;; modification, are permitted provided that the following conditions
