@@ -174,12 +174,10 @@ HEAD-REQUEST-P is true."
         (setf (header-out :etag) etag))
       (when content-language
         (setf (header-out :content-language) content-language))
-      (catch 'handler-done
-        (handle-if-modified-since write-date)
-        (when (equal etag (header-in* :if-none-match))
-          (setf (return-code) +http-not-modified+)))
-      (when (eql (return-code) +http-not-modified+)
-        (throw 'handler-done nil))
+      (handle-if-modified-since write-date)
+      (when (equal etag (header-in* :if-none-match))
+        (setf (return-code) +http-not-modified+)
+        (abort-request-handler))
       (setf (header-out :last-modified) (rfc-1123-date write-date)
             (content-length) (resource-length resource))
       (unless head-request-p
@@ -199,7 +197,7 @@ response will be generated and DEFAULT-RETURN-CODE will be used
 instead."
   (unless results
     (setf (return-code) default-return-code)
-    (throw 'handler-done nil))
+    (abort-request-handler))
   (setf (content-type) "text/xml; charset=utf-8"
         (return-code) +http-multi-status+)
   ;; use a hash table to group by status code

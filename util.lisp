@@ -30,14 +30,14 @@
 (in-package :cl-webdav)
 
 (defmacro define-return-code-shortcut (name return-code)
-  "Defines a function called NAME which just sets the HTTP return
-code to RETURN-CODE and then ends the current handler by throwing
-NIL to the catch tag HANDLER-DONE."
+  "Defines a function called NAME which just sets the HTTP return code
+to RETURN-CODE and then ends the current handler by calling
+ABORT-REQUEST-HANDLER."
   `(defun ,name ()
-     ,(format nil "Sets RETURN-CODE to ~A and then throws NIL to
-the HANDLER-DONE catch tag." return-code)
+     ,(format nil "Sets RETURN-CODE to ~A and then calls ABORT-REQUEST-HANDLER."
+              return-code)
      (setf (return-code) ,return-code)
-     (throw 'handler-done nil)))
+     (abort-request-handler)))
 
 (define-return-code-shortcut not-implemented +http-not-implemented+)
 (define-return-code-shortcut bad-request +http-bad-request+)

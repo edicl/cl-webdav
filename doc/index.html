@@ -724,10 +724,9 @@ RFC</a>, non-DAV elements are skipped unless they appear in positions
 allowed.  If <code><i>root-name</i></code> is given, it should be the
 local name (a string) of a DAV node.  In this case, the XML is
 validated.  This function is expected to be called from within a
-Hunchentoot request and throws to
-the <a
-href="http://weitz.de/hunchentoot/#handler-done"><code>HANDLER-DONE</code></a>
-tag with a return code of
+Hunchentoot request and
+calls <a href="http://weitz.de/hunchentoot/#abort-request-handler"><code>ABORT-REQUEST-HANDLER</code></a>
+with a return code of
 <a href="http://weitz.de/hunchentoot/#+http-bad-request+"><code>+HTTP-BAD-REQUEST+</code></a> if a parsing error occurs or if the XML is
 invalid.
 <p>
