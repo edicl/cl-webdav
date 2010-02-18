@@ -204,9 +204,9 @@ Hunchentoot provides and usually you only have to write your own
 method if you're sitting behind a proxy.")
   (:method (resource)
     (format nil "http~:[~;s~]://~A~@[:~A~]/"
-            (ssl-p)
-            (ppcre:regex-replace ":\\d+$" (host) "")
-            (server-port))))
+            (acceptor-ssl-p *acceptor*)
+            (ppcre:regex-replace ":\\d+$" (acceptor-address *acceptor*) "")
+            (acceptor-port *acceptor*))))
 
 (defgeneric get-dead-properties (resource)
   (:documentation "This function must return all dead properties
@@ -399,9 +399,9 @@ name SCRIPT-NAME \(which is already URL-decoded).")
   "Utility function which sets up Hunchentoot's *REPLY* object
 for a +HTTP-CREATED+ response corresponding to the newly-created
 resource RESOURCE."
-  (setf (content-type) (get-content-type resource)
+  (setf (content-type*) (get-content-type resource)
         (header-out :location) (resource-script-name resource)
-        (return-code) +http-created+)
+        (return-code*) +http-created+)
   (let ((etag (resource-etag resource))
         (content-language (resource-content-language resource)))
     (when etag

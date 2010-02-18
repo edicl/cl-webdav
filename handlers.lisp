@@ -102,8 +102,8 @@ properties."
       (not-found))
     (multiple-value-bind (properties propname)
         (parse-propfind (raw-post-data :force-binary t))
-      (setf (content-type) "text/xml; charset=utf-8"
-            (return-code) +http-multi-status+)
+      (setf (content-type*) "text/xml; charset=utf-8"
+            (return-code*) +http-multi-status+)
       (let ((result
              ;; loop through the resource and its descendants until
              ;; depth limit is reached
@@ -145,8 +145,8 @@ returns a corresponding \"multistatus\" XML element."
                    (push (cons +http-conflict+ property) results))
                   (t (funcall property-handler resource property)
                      (push (cons +http-ok+ property) results))))))
-      (setf (content-type) "text/xml; charset=utf-8"
-            (return-code) +http-multi-status+)
+      (setf (content-type*) "text/xml; charset=utf-8"
+            (return-code*) +http-multi-status+)
       (serialize-xmls-node
        (dav-node "multistatus"
                  (apply #'dav-node "response"
@@ -169,7 +169,7 @@ HEAD-REQUEST-P is true."
     (let ((etag (resource-etag resource))
           (write-date (resource-write-date resource))
           (content-language (resource-content-language resource)))
-      (setf (content-type) (resource-content-type resource))
+      (setf (content-type*) (resource-content-type resource))
       (when etag 
         (setf (header-out :etag) etag))
       (when content-language
@@ -179,7 +179,7 @@ HEAD-REQUEST-P is true."
         (setf (return-code) +http-not-modified+)
         (abort-request-handler))
       (setf (header-out :last-modified) (rfc-1123-date write-date)
-            (content-length) (resource-length resource))
+            (content-length*) (resource-length resource))
       (unless head-request-p
         (send-content resource (send-headers))))))
 
@@ -196,10 +196,10 @@ corresponding status code.  If RESULTS is NIL, not MUTILSTATUS
 response will be generated and DEFAULT-RETURN-CODE will be used
 instead."
   (unless results
-    (setf (return-code) default-return-code)
+    (setf (return-code*) default-return-code)
     (abort-request-handler))
-  (setf (content-type) "text/xml; charset=utf-8"
-        (return-code) +http-multi-status+)
+  (setf (content-type*) "text/xml; charset=utf-8"
+        (return-code*) +http-multi-status+)
   ;; use a hash table to group by status code
   (let ((status-hash (make-hash-table)))
     (loop for (status . resource) in results
@@ -295,8 +295,8 @@ handler for MOVE requests if MOVEP is true."
             (failed-dependency)))
         (let ((results (copy-or-move-resource* source destination movep depth-value)))
           (cond (results (multi-status results))
-                (destination-exists (setf (return-code) +http-no-content+
-                                          (content-type) nil)
+                (destination-exists (setf (return-code*) +http-no-content+
+                                          (content-type*) nil)
                                     nil)
                 (t (resource-created destination))))))))
 
@@ -322,7 +322,7 @@ internally."
       (error (condition)
         (warn "While trying to create collection ~S: ~A"
               (resource-script-name resource) condition)
-        (setf (return-code) +http-internal-server-error+))
+        (setf (return-code*) +http-internal-server-error+))
       (:no-error (&rest args)
         (declare (ignore args))
         (resource-created resource)))))
