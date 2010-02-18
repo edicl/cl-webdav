@@ -1,4 +1,4 @@
-Changes to make CL-WEBDAV compatible with new Hunchentoot (Cyrus Harmon and Matthew Curry)
+Changes to make CL-WEBDAV compatible with new Hunchentoot (Cyrus Harmon, Matthew Curry, and Ralf Mattes)
 
 Version 0.1.2
 2007-10-21
