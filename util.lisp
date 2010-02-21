@@ -1,7 +1,7 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-WEBDAV; Base: 10 -*-
 ;;; $Header: /usr/local/cvsrep/cl-webdav/util.lisp,v 1.3 2007/04/17 07:42:08 edi Exp $
 
-;;; Copyright (c) 2007-2009, Dr. Edmund Weitz.  All rights reserved.
+;;; Copyright (c) 2007-2010, Dr. Edmund Weitz.  All rights reserved.
 
 ;;; Redistribution and use in source and binary forms, with or without
 ;;; modification, are permitted provided that the following conditions
@@ -36,7 +36,7 @@ ABORT-REQUEST-HANDLER."
   `(defun ,name ()
      ,(format nil "Sets RETURN-CODE to ~A and then calls ABORT-REQUEST-HANDLER."
               return-code)
-     (setf (return-code) ,return-code)
+     (setf (return-code*) ,return-code)
      (abort-request-handler)))
 
 (define-return-code-shortcut not-implemented +http-not-implemented+)

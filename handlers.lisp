@@ -1,7 +1,7 @@
 ;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-WEBDAV; Base: 10 -*-
 ;;; $Header: /usr/local/cvsrep/cl-webdav/handlers.lisp,v 1.13 2007/05/19 22:34:35 edi Exp $
 
-;;; Copyright (c) 2007-2009, Dr. Edmund Weitz.  All rights reserved.
+;;; Copyright (c) 2007-2010, Dr. Edmund Weitz.  All rights reserved.
 
 ;;; Redistribution and use in source and binary forms, with or without
 ;;; modification, are permitted provided that the following conditions
@@ -176,7 +176,7 @@ HEAD-REQUEST-P is true."
         (setf (header-out :content-language) content-language))
       (handle-if-modified-since write-date)
       (when (equal etag (header-in* :if-none-match))
-        (setf (return-code) +http-not-modified+)
+        (setf (return-code*) +http-not-modified+)
         (abort-request-handler))
       (setf (header-out :last-modified) (rfc-1123-date write-date)
             (content-length*) (resource-length resource))
