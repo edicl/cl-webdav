@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
-<html> 
+<html>
 
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
@@ -10,16 +10,16 @@
   h4.none { text-decoration: none; }
   a { text-decoration: none; padding: 1px 2px 1px 2px; }
   a:visited { text-decoration: none; padding: 1px 2px 1px 2px; }
-  a:hover { text-decoration: none; padding: 1px 1px 1px 1px; border: 1px solid #000000; } 
+  a:hover { text-decoration: none; padding: 1px 1px 1px 1px; border: 1px solid #000000; }
   a:focus { text-decoration: none; padding: 1px 2px 1px 2px; border: none; }
   a.none { text-decoration: none; padding: 0; }
-  a.none:visited { text-decoration: none; padding: 0; } 
-  a.none:hover { text-decoration: none; border: none; padding: 0; } 
-  a.none:focus { text-decoration: none; border: none; padding: 0; } 
-  a.noborder { text-decoration: none; padding: 0; } 
-  a.noborder:visited { text-decoration: none; padding: 0; } 
-  a.noborder:hover { text-decoration: none; border: none; padding: 0; } 
-  a.noborder:focus { text-decoration: none; border: none; padding: 0; }  
+  a.none:visited { text-decoration: none; padding: 0; }
+  a.none:hover { text-decoration: none; border: none; padding: 0; }
+  a.none:focus { text-decoration: none; border: none; padding: 0; }
+  a.noborder { text-decoration: none; padding: 0; }
+  a.noborder:visited { text-decoration: none; padding: 0; }
+  a.noborder:hover { text-decoration: none; border: none; padding: 0; }
+  a.noborder:focus { text-decoration: none; border: none; padding: 0; }
   pre.none { padding:5px; background-color:#ffffff }
   </style>
 </head>
@@ -58,8 +58,8 @@ license</a> so you can basically do with it whatever you want.
   <ol>
     <li><a href="#resources">Resources</a>
       <ol>
-        <li><a href="#mandatory">Mandatory methods</a>
-        <li><a href="#optional">Optional methods</a>
+	<li><a href="#mandatory">Mandatory methods</a>
+	<li><a href="#optional">Optional methods</a>
       </ol>
     <li><a href="#xml">XML handling</a>
     <li><a href="#properties">Properties</a>
@@ -102,7 +102,7 @@ CL-USER 1 &gt; (<a href="http://www.lispworks.com/documentation/HyperSpec/Body/m
 (#&lt;Closure ((METHOD CL-WEBDAV:CREATE-DAV-DISPATCHER (SYMBOL)) . 1) 200B8992&gt; HUNCHENTOOT:DEFAULT-DISPATCHER)
 
 CL-USER 2 &gt; (<a href="http://weitz.de/hunchentoot/#start-server" class=noborder>tbnl:start-server</a> :port 4242)
-CL-USER 2 &gt; (<a href="http://weitz.de/hunchentoot/#start" class=noborder>hunchentoot:start</a> (make-instance <a class="noborder" href="http://weitz.de/hunchentoot/#acceptor">'hunchentoot:acceptor</a> :port 4242))
+CL-USER 2 &gt; (<a href="http://weitz.de/hunchentoot/#start" class=noborder>hunchentoot:start</a> (make-instance <a class="noborder" href="http://weitz.de/hunchentoot/#acceptor">'hunchentoot:easy-acceptor</a> :port 4242))
 #&lt;HUNCHENTOOT::SERVER 200BCBCF&gt;
 </pre>
 
@@ -474,7 +474,7 @@ resource that in the future can be accessed as <code><i>resource</i></code>.  Th
 This must be a function which accepts a
 <a href="http://weitz.de/hunchentoot/">Hunchentoot</a> <a href="http://weitz.de/hunchentoot/#requests">request object</a> <code><i>request</i></code> and returns a generalized
 boolean denoting whether <code><i>request</i></code> is a resource the DAV
-server wants to handle. 
+server wants to handle.
 It will be called by the dispatcher created with <a href="#create-dav-dispatcher"><code>CREATE-DAV-DISPATCHER</code></a>.
  Usually, you'll want to look at the
 <a href="http://weitz.de/hunchentoot/#script-name">script name</a> of
@@ -933,7 +933,7 @@ If you use <a href="#create-dav-dispatcher"><code>CREATE-DAV-DISPATCHER</code></
 
 The list of methods (as keywords) returned by the <code>Allow</code>
 header in case of OPTIONS requests (and also utilized by the
-handler for MKCOL).  
+handler for MKCOL).
 The initial value is the list
 <pre>
 (:options :get :head :delete :propfind :proppatch :put :copy :move :mkcol)
