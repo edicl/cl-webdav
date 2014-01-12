@@ -1,3 +1,7 @@
+Version 0.2.1
+2014-01-12
+Documentation updates and cleanup (Sean P. Champ)
+
 Version 0.2.0
 2010-02-21
 Changes to make CL-WEBDAV compatible with new Hunchentoot (Cyrus Harmon, Matthew Curry, and Ralf Mattes)
