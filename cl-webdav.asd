@@ -30,6 +30,7 @@
 (asdf:defsystem :cl-webdav
   :serial t
   :version "0.2.0"
+  :description "A WebDAV server written in Common Lisp"
   :components ((:file "packages")
                (:file "specials")
                (:file "util")
