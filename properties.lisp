@@ -80,11 +80,11 @@ found) the property itself."
   (let ((property (handler-case
                       (get-property resource property-designator)
                     (error (condition)
-                      (log-message :warning
-                                   "While trying to get property ~S for resource ~S: ~A"
-                                   (local-name property-designator)
-                                   (resource-script-name resource)
-                                   condition)
+                      (warn
+                       "While trying to get property ~S for resource ~S: ~A"
+                       (local-name property-designator)
+                       (resource-script-name resource)
+                       condition)
                       +http-internal-server-error+))))
     (etypecase property
       (null (values +http-ok+ property-designator))
@@ -101,7 +101,7 @@ dead properties for the resource RESOURCE."
         collect (remove-content property)))
 
 (defconstant +dav-property-designators+
-  (load-time-value 
+  (load-time-value
    (loop for (name . nil) in +dav-property-alist+
          collect (dav-node name)))
   "A list of XMLS nodes which are property designators for all
@@ -190,4 +190,3 @@ key FROM-KEY \(if any) to the key TO-KEY."
         ;; actually, due to how this is implemented, COPY-TREE isn't
         ;; really necessary, but it's better to be safe than sorry...
         (copy-tree (gethash from-key *property-hash*))))
-
